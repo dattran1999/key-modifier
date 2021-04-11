@@ -48,7 +48,7 @@ def key_handle(data):
 
     elif data['action'] == 'press':
         try:
-            keyboard.release(data['key'])
+            keyboard.press(data['key'])
         except ValueError:
             key_obj = get_key_enum(data['key'])
             keyboard.press(key_obj)
