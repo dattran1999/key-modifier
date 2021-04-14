@@ -1,5 +1,5 @@
 import os
-from socket import socket, gethostbyname, gethostname, AF_INET, SOCK_DGRAM
+from socket import socket, gethostbyname_ex, gethostbyname, gethostname, AF_INET, SOCK_DGRAM
 from pynput.keyboard import Controller as KeyController, Key
 from pynput.mouse import Controller as MouseController, Button
 import json
